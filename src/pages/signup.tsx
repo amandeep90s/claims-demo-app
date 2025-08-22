@@ -42,72 +42,72 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
-        <div className="mb-8 text-center">
+    <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4'>
+      <div className='w-full max-w-md rounded-lg bg-white p-8 shadow-lg'>
+        <div className='mb-8 text-center'>
           <h1 className={title({ size: 'sm' })}>Sign Up</h1>
-          <p className="text-small text-default-500 mt-2">Create your account to get started</p>
+          <p className='text-small text-default-500 mt-2'>Create your account to get started</p>
         </div>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div className="flex gap-2">
+        <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+          <div className='flex gap-2'>
             <Input
               isRequired
-              label="First Name"
-              placeholder="Enter your first name"
-              type="text"
+              label='First Name'
+              placeholder='Enter your first name'
+              type='text'
               value={formData.firstName}
-              variant="bordered"
+              variant='bordered'
               onChange={handleChange('firstName')}
             />
             <Input
               isRequired
-              label="Last Name"
-              placeholder="Enter your last name"
-              type="text"
+              label='Last Name'
+              placeholder='Enter your last name'
+              type='text'
               value={formData.lastName}
-              variant="bordered"
+              variant='bordered'
               onChange={handleChange('lastName')}
             />
           </div>
 
           <Input
             isRequired
-            label="Email"
-            placeholder="Enter your email"
-            type="email"
+            label='Email'
+            placeholder='Enter your email'
+            type='email'
             value={formData.email}
-            variant="bordered"
+            variant='bordered'
             onChange={handleChange('email')}
           />
 
           <Input
             isRequired
-            label="Password"
-            placeholder="Create a password"
-            type="password"
+            label='Password'
+            placeholder='Create a password'
+            type='password'
             value={formData.password}
-            variant="bordered"
+            variant='bordered'
             onChange={handleChange('password')}
           />
 
           <Input
             isRequired
-            label="Confirm Password"
-            placeholder="Confirm your password"
-            type="password"
+            label='Confirm Password'
+            placeholder='Confirm your password'
+            type='password'
             value={formData.confirmPassword}
-            variant="bordered"
+            variant='bordered'
             onChange={handleChange('confirmPassword')}
           />
 
-          <Button className="w-full" color="primary" isLoading={isLoading} type="submit">
+          <Button className='w-full' color='primary' isLoading={isLoading} type='submit'>
             {isLoading ? 'Creating account...' : 'Sign Up'}
           </Button>
 
-          <div className="text-small text-center">
-            <span className="text-default-500">Already have an account? </span>
-            <Link className="text-primary" href="/signin">
+          <div className='text-small text-center'>
+            <span className='text-default-500'>Already have an account? </span>
+            <Link className='text-primary' href='/signin'>
               Sign in
             </Link>
           </div>
