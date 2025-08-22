@@ -1,6 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
-
-import { AppProvider } from './provider';
+import { Route, Routes } from 'react-router-dom';
 
 import {
   CompleteSignupPage,
@@ -13,44 +11,17 @@ import {
 } from '@/pages/auth';
 import HomePage from '@/pages/home';
 
-// Helper function to wrap components with AppProvider
-const withProvider = (Component: React.ComponentType) => (
-  <AppProvider>
-    <Component />
-  </AppProvider>
-);
-
-export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: withProvider(HomePage),
-  },
-  {
-    path: '/auth/signin',
-    element: withProvider(SigninPage),
-  },
-  {
-    path: '/auth/signup',
-    element: withProvider(SignupPage),
-  },
-  {
-    path: '/auth/forgot-password',
-    element: withProvider(ForgotPasswordPage),
-  },
-  {
-    path: '/auth/reset-password',
-    element: withProvider(ResetPasswordPage),
-  },
-  {
-    path: '/auth/set-password',
-    element: withProvider(SetPasswordPage),
-  },
-  {
-    path: '/auth/complete-signup',
-    element: withProvider(CompleteSignupPage),
-  },
-  {
-    path: '/auth/verify-otp',
-    element: withProvider(VerifyOtpPage),
-  },
-]);
+export function AppRoutes() {
+  return (
+    <Routes>
+      <Route element={<HomePage />} path='/' />
+      <Route element={<SigninPage />} path='/signin' />
+      <Route element={<SignupPage />} path='/signup' />
+      <Route element={<ForgotPasswordPage />} path='/forgot-password' />
+      <Route element={<ResetPasswordPage />} path='/reset-password' />
+      <Route element={<SetPasswordPage />} path='/set-password' />
+      <Route element={<CompleteSignupPage />} path='/complete-signup' />
+      <Route element={<VerifyOtpPage />} path='/verify-otp' />
+    </Routes>
+  );
+}
