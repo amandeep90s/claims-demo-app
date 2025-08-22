@@ -1,13 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import "@/styles/globals.css";
-import { Provider } from "./provider.tsx";
+import '@/styles/globals.css';
+import { Provider } from './provider.tsx';
 
-import HomePage from "@/pages/home";
-import SignInPage from "@/pages/signin";
-import SignUpPage from "@/pages/signup";
+import HomePage from '@/pages/home';
+import SignInPage from '@/pages/signin';
+import SignUpPage from '@/pages/signup';
 
 // Root component that wraps everything with Provider
 function AppWithProvider({ children }: { children: React.ReactNode }) {
@@ -16,7 +16,7 @@ function AppWithProvider({ children }: { children: React.ReactNode }) {
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: (
       <AppWithProvider>
         <HomePage />
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/signin",
+    path: '/signin',
     element: (
       <AppWithProvider>
         <SignInPage />
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/signup",
+    path: '/signup',
     element: (
       <AppWithProvider>
         <SignUpPage />
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <RouterProvider router={router} />
   </React.StrictMode>,

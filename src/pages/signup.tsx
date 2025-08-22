@@ -1,27 +1,26 @@
-import { useState } from "react";
-import { Link } from "@heroui/link";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
+import { useState } from 'react';
+import { Link } from '@heroui/link';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
 
-import { title } from "@/components/primitives";
+import { title } from '@/components/primitives';
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange =
-    (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: e.target.value,
-      }));
-    };
+  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: e.target.value,
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +28,7 @@ export default function SignUpPage() {
 
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      alert('Passwords do not match');
       setIsLoading(false);
 
       return;
@@ -43,13 +42,11 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <div className="text-center mb-8">
-          <h1 className={title({ size: "sm" })}>Sign Up</h1>
-          <p className="text-small text-default-500 mt-2">
-            Create your account to get started
-          </p>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
+        <div className="mb-8 text-center">
+          <h1 className={title({ size: 'sm' })}>Sign Up</h1>
+          <p className="text-small text-default-500 mt-2">Create your account to get started</p>
         </div>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -61,7 +58,7 @@ export default function SignUpPage() {
               type="text"
               value={formData.firstName}
               variant="bordered"
-              onChange={handleChange("firstName")}
+              onChange={handleChange('firstName')}
             />
             <Input
               isRequired
@@ -70,7 +67,7 @@ export default function SignUpPage() {
               type="text"
               value={formData.lastName}
               variant="bordered"
-              onChange={handleChange("lastName")}
+              onChange={handleChange('lastName')}
             />
           </div>
 
@@ -81,7 +78,7 @@ export default function SignUpPage() {
             type="email"
             value={formData.email}
             variant="bordered"
-            onChange={handleChange("email")}
+            onChange={handleChange('email')}
           />
 
           <Input
@@ -91,7 +88,7 @@ export default function SignUpPage() {
             type="password"
             value={formData.password}
             variant="bordered"
-            onChange={handleChange("password")}
+            onChange={handleChange('password')}
           />
 
           <Input
@@ -101,19 +98,14 @@ export default function SignUpPage() {
             type="password"
             value={formData.confirmPassword}
             variant="bordered"
-            onChange={handleChange("confirmPassword")}
+            onChange={handleChange('confirmPassword')}
           />
 
-          <Button
-            className="w-full"
-            color="primary"
-            isLoading={isLoading}
-            type="submit"
-          >
-            {isLoading ? "Creating account..." : "Sign Up"}
+          <Button className="w-full" color="primary" isLoading={isLoading} type="submit">
+            {isLoading ? 'Creating account...' : 'Sign Up'}
           </Button>
 
-          <div className="text-center text-small">
+          <div className="text-small text-center">
             <span className="text-default-500">Already have an account? </span>
             <Link className="text-primary" href="/signin">
               Sign in
