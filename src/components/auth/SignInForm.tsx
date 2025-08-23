@@ -4,6 +4,7 @@ import { EyeIcon, EyeSlashIcon, InformationCircleIcon } from '@heroicons/react/2
 import { Button, Card, CardBody } from '@heroui/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { FormField } from '@/components/ui';
@@ -12,6 +13,7 @@ import { createFormConfig } from '@/utils/forms';
 import { cn } from '@/utils/helpers';
 
 export default function SignInForm({ onSubmit, isLoading: externalLoading, error: externalError }: SignInFormProps) {
+  const { t } = useTranslation('auth');
   const [isVisible, setIsVisible] = useState(false);
 
   const {
@@ -54,7 +56,7 @@ export default function SignInForm({ onSubmit, isLoading: externalLoading, error
     <Card className={cn('w-full max-w-md rounded-sm border border-gray-200 bg-white shadow')}>
       <CardBody className={cn('p-8')}>
         <div className={cn('mb-6')}>
-          <h1 className={cn('mb-2 text-2xl font-semibold text-gray-800')}>Sign in to your account</h1>
+          <h1 className={cn('mb-2 text-2xl font-semibold text-gray-800')}>{t('signin.title')} to your account</h1>
           <p className={cn('text-sm text-gray-600')}>Enter your User ID and password to continue</p>
         </div>
 
