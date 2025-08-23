@@ -11,8 +11,8 @@ export default {
   ],
   theme: {
     fontFamily: {
-      sans: ['var(--font-ibm-plex-sans)', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-      mono: ['var(--font-ibm-plex-mono)', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+      sans: ['IBM Plex Sans', 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+      mono: ['Menlo', 'Monaco', 'Consolas', 'monospace'],
     },
     extend: {
       colors: {

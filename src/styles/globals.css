@@ -1,3 +1,46 @@
 @import 'tailwindcss';
 
 @config "../../tailwind.config.js";
+
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-sans/700.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #b31b34;
+  --primary-foreground: #ffffff;
+  --font-inter: 'Inter', Arial, sans-serif;
+  --font-ibm-plex-sans: 'IBM Plex Sans', Arial, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    var(--font-ibm-plex-sans),
+    var(--font-inter),
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+* {
+  color-scheme: light;
+  font-family: inherit;
+}
+
+.font-sans {
+  font-family:
+    var(--font-inter),
+    var(--font-ibm-plex-sans),
+    system-ui,
+    -apple-system,
+    sans-serif !important;
+}
