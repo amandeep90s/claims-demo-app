@@ -1,11 +1,12 @@
 import type { CompleteSignupFormProps } from '@/types/auth';
 
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Button, Card, CardBody, Input } from '@heroui/react';
+import { Button, Card, CardBody } from '@heroui/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
+import { FormField } from '@/components/ui';
 import { completeSignupSchema, type CompleteSignupFormData } from '@/schemas/auth';
 import { createFormConfig } from '@/utils/forms';
 
@@ -104,13 +105,10 @@ export default function CompleteSignupForm({
 
           {/* OTP Field */}
           <div className='space-y-2'>
-            <label className='block text-sm font-medium text-gray-700' htmlFor='otp'>
-              Verification Code <span className='text-red-500'>*</span>
-            </label>
-            <Input
+            <FormField
+              label='Verification Code'
               {...register('otp')}
-              className='text-center'
-              errorMessage={errors.otp?.message}
+              error={errors.otp}
               id='otp'
               isDisabled={isLoading}
               isInvalid={!!errors.otp}
