@@ -2,7 +2,7 @@ import { Input, InputProps } from '@heroui/react';
 import { forwardRef } from 'react';
 import { FieldError } from 'react-hook-form';
 
-import { formFieldStyles, getErrorClasses } from '@/utils/forms';
+import { formFieldStyles } from '@/utils/forms';
 import { cn } from '@/utils/helpers';
 
 export interface FormFieldProps extends Omit<InputProps, 'errorMessage'> {
@@ -22,7 +22,7 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
           ref={ref}
           classNames={{
             input: cn(formFieldStyles.input),
-            inputWrapper: cn(formFieldStyles.inputWrapper, getErrorClasses(!!error), classNames?.inputWrapper),
+            inputWrapper: cn(formFieldStyles.inputWrapper, classNames?.inputWrapper),
             ...classNames,
           }}
           errorMessage={error?.message}

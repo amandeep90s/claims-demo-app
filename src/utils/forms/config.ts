@@ -28,12 +28,4 @@ export const formFieldStyles = {
     'focus-within:border-primary data-[hover=true]:border-gray-400',
     'rounded-sm h-12',
   ],
-  errorWrapper: 'border-red-500 focus-within:border-red-500',
 } as const;
-
-/**
- * Generate consistent error message styling
- */
-export function getErrorClasses(hasError: boolean): string {
-  return hasError ? formFieldStyles.errorWrapper : '';
-}
