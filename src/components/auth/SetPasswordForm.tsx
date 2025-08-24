@@ -1,11 +1,11 @@
 import type { SetPasswordFormProps } from '@/types/auth';
 
-import { Button, Card, CardBody, Textarea } from '@heroui/react';
+import { Button, Card, CardBody } from '@heroui/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
-import { PasswordField } from '@/components/ui';
+import { FormField, PasswordField } from '@/components/ui';
 import { setPasswordSchema, type SetPasswordFormData } from '@/schemas/auth';
 import { createFormConfig } from '@/utils/forms';
 
@@ -123,18 +123,16 @@ export default function SetPasswordForm({
 
             <div className='space-y-4'>
               <div>
-                <label className='mb-2 block text-sm font-medium text-gray-700' htmlFor='securityQuestion1'>
-                  What is the name of your first pet? <span className='text-red-500'>*</span>
-                </label>
-                <Textarea
+                <FormField
+                  label='What is the name of your first pet?'
                   {...register('securityQuestion1')}
                   className='w-full'
                   id='securityQuestion1'
                   isDisabled={isLoading}
                   isInvalid={!!errors.securityQuestion1}
-                  maxRows={2}
-                  minRows={1}
                   placeholder='Enter your answer'
+                  size='lg'
+                  type='text'
                   variant='bordered'
                 />
                 {errors.securityQuestion1 && (
@@ -143,18 +141,16 @@ export default function SetPasswordForm({
               </div>
 
               <div>
-                <label className='mb-2 block text-sm font-medium text-gray-700' htmlFor='securityQuestion2'>
-                  What is the name of the city where you were born? <span className='text-red-500'>*</span>
-                </label>
-                <Textarea
+                <FormField
+                  label='What is the name of the city where you were born?'
                   {...register('securityQuestion2')}
                   className='w-full'
                   id='securityQuestion2'
                   isDisabled={isLoading}
                   isInvalid={!!errors.securityQuestion2}
-                  maxRows={2}
-                  minRows={1}
                   placeholder='Enter your answer'
+                  size='lg'
+                  type='text'
                   variant='bordered'
                 />
                 {errors.securityQuestion2 && (

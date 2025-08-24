@@ -1,3 +1,10 @@
+export interface VerifyOtpFormProps {
+  onSubmit?: (data: { otp: string }) => Promise<void> | void;
+  onResendOTP?: () => Promise<void> | void;
+  isLoading?: boolean;
+  error?: string;
+}
+
 export interface SignInCredentials {
   userId: string;
   password: string;

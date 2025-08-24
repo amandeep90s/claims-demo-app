@@ -12,12 +12,11 @@ export interface FormFieldProps extends Omit<InputProps, 'errorMessage'> {
 }
 
 export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
-  ({ label, error, required, className, classNames, ...props }, ref) => {
+  ({ label, error, className, classNames, ...props }, ref) => {
     return (
       <div className={cn('space-y-2', className)}>
         <label className={cn('block text-sm font-medium text-gray-700')} htmlFor={props.id || props.name}>
           {label}
-          {required && <span className='ml-1 text-red-500'>*</span>}
         </label>
         <Input
           ref={ref}

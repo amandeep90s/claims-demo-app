@@ -1,12 +1,6 @@
 import type { SignUpFormProps } from '@/types/auth';
 
-import {
-  CheckCircleIcon,
-  IdentificationIcon,
-  InformationCircleIcon,
-  PhoneIcon,
-  UserIcon,
-} from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Button, Card, CardBody, Modal, ModalBody, ModalContent } from '@heroui/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -73,34 +67,27 @@ export default function SignUpForm({ onSubmit, isLoading: externalLoading, error
             )}
 
             {/* Name Fields */}
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-              <FormField
-                {...register('firstName')}
-                required
-                endContent={<UserIcon className='pointer-events-none h-5 w-5 flex-shrink-0 text-gray-400' />}
-                error={errors.firstName}
-                id='firstName'
-                isDisabled={isLoading}
-                label='First Name'
-                type='text'
-              />
-              <FormField
-                {...register('lastName')}
-                required
-                endContent={<UserIcon className='pointer-events-none h-5 w-5 flex-shrink-0 text-gray-400' />}
-                error={errors.lastName}
-                id='lastName'
-                isDisabled={isLoading}
-                label='Last Name'
-                type='text'
-              />
-            </div>
+            <FormField
+              {...register('firstName')}
+              error={errors.firstName}
+              id='firstName'
+              isDisabled={isLoading}
+              label='First Name'
+              type='text'
+            />
+
+            <FormField
+              {...register('lastName')}
+              error={errors.lastName}
+              id='lastName'
+              isDisabled={isLoading}
+              label='Last Name'
+              type='text'
+            />
 
             {/* Email Field */}
             <FormField
               {...register('email')}
-              required
-              endContent={<InformationCircleIcon className='pointer-events-none h-5 w-5 flex-shrink-0 text-gray-400' />}
               error={errors.email}
               id='email'
               isDisabled={isLoading}
@@ -111,8 +98,6 @@ export default function SignUpForm({ onSubmit, isLoading: externalLoading, error
             {/* Personal ID Field */}
             <FormField
               {...register('personalId')}
-              required
-              endContent={<IdentificationIcon className='pointer-events-none h-5 w-5 flex-shrink-0 text-gray-400' />}
               error={errors.personalId}
               id='personalId'
               isDisabled={isLoading}
@@ -123,7 +108,6 @@ export default function SignUpForm({ onSubmit, isLoading: externalLoading, error
             {/* Mobile Number Field */}
             <FormField
               {...register('mobileNumber')}
-              endContent={<PhoneIcon className='pointer-events-none h-5 w-5 flex-shrink-0 text-gray-400' />}
               error={errors.mobileNumber}
               id='mobileNumber'
               isDisabled={isLoading}
