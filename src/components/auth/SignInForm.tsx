@@ -2,13 +2,14 @@ import type { SignInFormProps } from '@/types/auth';
 
 import { EyeIcon, EyeSlashIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Button, Card, CardBody } from '@heroui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { FormField } from '@/components/ui';
 import { signInSchema, type SignInFormData } from '@/schemas/auth';
+import { useAuthFormStore } from '@/store/authFormStore';
 import { createFormConfig } from '@/utils/forms';
 import { cn } from '@/utils/helpers';
 
@@ -16,19 +17,40 @@ export default function SignInForm({ onSubmit, isLoading: externalLoading, error
   const { t } = useTranslation('auth');
   const [isVisible, setIsVisible] = useState(false);
 
+  const { signIn, setSignIn } = useAuthFormStore();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
+    watch,
+    reset,
   } = useForm<SignInFormData>(
     createFormConfig(signInSchema, {
       defaultValues: {
-        userId: '',
-        password: '',
+        userId: signIn.userId || '',
+        password: signIn.password || '',
       },
     })
   );
+
+  // Persist form values to store on change
+  useEffect(() => {
+    const subscription = watch((values) => {
+      setSignIn(values);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, setSignIn]);
+
+  // Restore form values from store if they change externally
+  useEffect(() => {
+    reset({
+      userId: signIn.userId || '',
+      password: signIn.password || '',
+    });
+  }, [signIn.userId, signIn.password, reset]);
 
   const isLoading = externalLoading || isSubmitting;
   const error = externalError;
@@ -40,11 +62,11 @@ export default function SignInForm({ onSubmit, isLoading: externalLoading, error
       if (onSubmit) {
         await onSubmit(data);
       } else {
-        console.log('Sign in data:', data);
+        //     console.log('Sign in data:', data);
         // Add your sign in logic here
       }
     } catch (error) {
-      console.error('Sign in error:', error);
+      //     console.error('Sign in error:', error);
       setError('root', {
         type: 'manual',
         message: error instanceof Error ? error.message : 'An error occurred',

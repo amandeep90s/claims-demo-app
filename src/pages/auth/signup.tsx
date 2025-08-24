@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { AlliedWorldLogo, AuthLayout, CompleteSignupForm, SetPasswordForm, SignUpForm } from '@/components/auth';
+import { useAuthFormStore } from '@/store/authFormStore';
 
 type Step = 'signup' | 'set-password' | 'complete-signup';
 
@@ -12,6 +13,17 @@ const SignupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   // You can store user info here if needed for later steps
   // const [userData, setUserData] = useState<any>(null);
+
+  const { resetAll, resetSignUp, resetSetPassword, resetCompleteSignup } = useAuthFormStore();
+
+  // Reset relevant form state on unmount
+  useEffect(() => {
+    return () => {
+      resetSignUp();
+      resetSetPassword();
+      resetCompleteSignup();
+    };
+  }, [resetSignUp, resetSetPassword, resetCompleteSignup]);
 
   // Simulated signup API call
   const handleSignup = async (_data: any) => {
@@ -52,6 +64,7 @@ const SignupPage = () => {
       await new Promise((res) => setTimeout(res, 800));
       // On success, you may redirect or show a success UI
       alert('Signup complete!');
+      resetAll();
     } catch (err: any) {
       setCompleteError(err.message || 'Verification failed');
     } finally {

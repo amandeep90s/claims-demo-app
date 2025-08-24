@@ -1,17 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { AlliedWorldLogo, AuthLayout, SignInForm, VerifyOtpForm } from '@/components/auth';
+import { useAuthFormStore } from '@/store/authFormStore';
 
 type Step = 'login' | 'verify-otp';
 
 const SigninPage = () => {
+  const { resetSignIn } = useAuthFormStore();
   const [step, setStep] = useState<Step>('login');
   const [loginError, setLoginError] = useState<string | undefined>(undefined);
   const [otpError, setOtpError] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState<string | undefined>(undefined);
-
-  console.log(userId);
 
   // Simulated login API call
   const handleLogin = async (data: { userId: string; password: string }) => {
@@ -25,7 +24,7 @@ const SigninPage = () => {
       if (data.userId.includes('fail')) {
         throw new Error('Invalid credentials');
       }
-      setUserId(data.userId);
+
       setStep('verify-otp');
     } catch (err: any) {
       setLoginError(err.message || 'Login failed');
@@ -63,6 +62,12 @@ const SigninPage = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      resetSignIn();
+    };
+  }, [resetSignIn]);
 
   return (
     <AuthLayout>

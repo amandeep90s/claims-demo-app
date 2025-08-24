@@ -1,13 +1,14 @@
 import type { CompleteSignupFormProps } from '@/types/auth';
 
-import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Button, Card, CardBody } from '@heroui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import { Button, Card, CardBody } from '@heroui/react';
 
 import { FormField } from '@/components/ui';
 import { completeSignupSchema, type CompleteSignupFormData } from '@/schemas/auth';
+import { useAuthFormStore } from '@/store/authFormStore';
 import { createFormConfig } from '@/utils/forms';
 
 export default function CompleteSignupForm({
@@ -19,28 +20,38 @@ export default function CompleteSignupForm({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isResending, setIsResending] = useState(false);
 
+  const { completeSignup, setCompleteSignup } = useAuthFormStore();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
+    reset,
   } = useForm<CompleteSignupFormData>(
     createFormConfig(completeSignupSchema, {
       defaultValues: {
-        otp: '',
+        otp: completeSignup.otp || '',
       },
     })
   );
+
+  // Persist form values to store on change
+  useEffect(() => {
+    const subscription = (values: any) => setCompleteSignup(values);
+    const unsubscribe = (reset as any)._updateStore?.subscribe(subscription);
+
+    return () => unsubscribe?.();
+  }, [setCompleteSignup, reset]);
 
   const isLoading = externalLoading || isSubmitting;
   const error = externalError;
 
   const onFormSubmit = async (data: CompleteSignupFormData) => {
+    setCompleteSignup(data);
     try {
       if (onSubmit) {
         await onSubmit(data);
       } else {
-        // Add your complete signup logic here
         setIsSuccess(true);
       }
     } catch (error) {

@@ -1,12 +1,13 @@
 import type { SetPasswordFormProps } from '@/types/auth';
 
-import { Button, Card, CardBody } from '@heroui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { Button, Card, CardBody } from '@heroui/react';
 
 import { FormField, PasswordField } from '@/components/ui';
 import { setPasswordSchema, type SetPasswordFormData } from '@/schemas/auth';
+import { useAuthFormStore } from '@/store/authFormStore';
 import { createFormConfig } from '@/utils/forms';
 
 export default function SetPasswordForm({
@@ -16,33 +17,43 @@ export default function SetPasswordForm({
 }: SetPasswordFormProps) {
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const { setPassword, setSetPassword } = useAuthFormStore();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
     watch,
+    reset,
   } = useForm<SetPasswordFormData>(
     createFormConfig(setPasswordSchema, {
       defaultValues: {
-        password: '',
-        confirmPassword: '',
-        securityQuestion1: '',
-        securityQuestion2: '',
+        password: setPassword.password || '',
+        confirmPassword: setPassword.confirmPassword || '',
+        securityQuestion1: setPassword.securityQuestion1 || '',
+        securityQuestion2: setPassword.securityQuestion2 || '',
       },
     })
   );
+
+  // Persist form values to store on change
+  useEffect(() => {
+    const subscription = (values: any) => setSetPassword(values);
+    const unsubscribe = (reset as any)._updateStore?.subscribe(subscription);
+
+    return () => unsubscribe?.();
+  }, [setSetPassword, reset]);
 
   const password = watch('password');
   const isLoading = externalLoading || isSubmitting;
   const error = externalError;
 
   const onFormSubmit = async (data: SetPasswordFormData) => {
+    setSetPassword(data);
     try {
       if (onSubmit) {
         await onSubmit(data);
       } else {
-        // Add your set password logic here
         setIsSuccess(true);
       }
     } catch (error) {

@@ -2,10 +2,11 @@ import type { SignUpFormProps } from '@/types/auth';
 
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Button, Card, CardBody, Modal, ModalBody, ModalContent } from '@heroui/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
+import { useAuthFormStore } from '@/store/authFormStore';
 import { FormField } from '@/components/ui';
 import { signUpSchema, type SignUpFormData } from '@/schemas/auth';
 import { createFormConfig } from '@/utils/forms';
@@ -14,32 +15,42 @@ export default function SignUpForm({ onSubmit, isLoading: externalLoading, error
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
 
+  const { signUp, setSignUp } = useAuthFormStore();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
+    reset,
   } = useForm<SignUpFormData>(
     createFormConfig(signUpSchema, {
       defaultValues: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        personalId: '',
-        mobileNumber: '',
+        firstName: signUp.firstName || '',
+        lastName: signUp.lastName || '',
+        email: signUp.email || '',
+        personalId: signUp.personalId || '',
+        mobileNumber: signUp.mobileNumber || '',
       },
     })
   );
+
+  // Persist form values to store on change
+  useEffect(() => {
+    const subscription = (values: any) => setSignUp(values);
+    const unsubscribe = (reset as any)._updateStore?.subscribe(subscription);
+
+    return () => unsubscribe?.();
+  }, [setSignUp, reset]);
 
   const isLoading = externalLoading || isSubmitting;
   const error = externalError;
 
   const onFormSubmit = async (data: SignUpFormData) => {
+    setSignUp(data);
     try {
       if (onSubmit) {
         await onSubmit(data);
       } else {
-        // Add your sign up logic here
         setSubmittedEmail(data.email);
         setShowEmailVerificationModal(true);
       }
