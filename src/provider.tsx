@@ -1,9 +1,8 @@
 import type { NavigateOptions } from 'react-router-dom';
 
+import { HeroUIProvider } from '@heroui/system';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { HeroUIProvider } from '@heroui/system';
-import { useHref, useNavigate } from 'react-router-dom';
 
 declare module '@react-types/shared' {
   interface RouterConfig {
@@ -23,13 +22,9 @@ const queryClient = new QueryClient({
 });
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const navigate = useNavigate();
-
   return (
     <QueryClientProvider client={queryClient}>
-      <HeroUIProvider navigate={navigate} useHref={useHref}>
-        {children}
-      </HeroUIProvider>
+      <HeroUIProvider>{children}</HeroUIProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

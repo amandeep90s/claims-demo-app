@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { createBrowserRouter, RouteObject, RouterProvider } from 'react-router-dom';
 
 // Lazy load pages for better code splitting
 const HomePage = lazy(() => import('@/pages/home'));
@@ -15,16 +15,35 @@ const LoadingSpinner = () => (
   </div>
 );
 
+const routes: RouteObject[] = [
+  {
+    path: '/',
+    element: <HomePage />,
+  },
+  {
+    path: '/signin',
+    element: <SigninPage />,
+  },
+  {
+    path: '/signup',
+    element: <SignupPage />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
+  },
+];
+
+const router = createBrowserRouter(routes);
+
 export function AppRoutes() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <Routes>
-        <Route element={<HomePage />} path='/' />
-        <Route element={<SigninPage />} path='/signin' />
-        <Route element={<SignupPage />} path='/signup' />
-        <Route element={<ForgotPasswordPage />} path='/forgot-password' />
-        <Route element={<ResetPasswordPage />} path='/reset-password' />
-      </Routes>
+      <RouterProvider router={router} />
     </Suspense>
   );
 }
