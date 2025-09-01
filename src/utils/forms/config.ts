@@ -26,6 +26,6 @@ export const formFieldStyles = {
   inputWrapper: [
     'border-gray-300 hover:border-gray-400',
     'focus-within:border-primary data-[hover=true]:border-gray-400',
-    'rounded-sm h-12',
+    'rounded-sm h-14',
   ],
 } as const;

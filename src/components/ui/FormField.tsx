@@ -15,9 +15,6 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
   ({ label, error, className, classNames, ...props }, ref) => {
     return (
       <div className={cn('space-y-2', className)}>
-        <label className={cn('block text-sm font-medium text-gray-700')} htmlFor={props.id || props.name}>
-          {label}
-        </label>
         <Input
           ref={ref}
           classNames={{
@@ -27,6 +24,8 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
           }}
           errorMessage={error?.message}
           isInvalid={!!error}
+          label={label}
+          size='lg'
           variant='bordered'
           {...props}
         />

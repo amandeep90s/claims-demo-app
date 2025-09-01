@@ -7,6 +7,7 @@ const SigninPage = lazy(() => import('@/pages/auth/signin'));
 const SignupPage = lazy(() => import('@/pages/auth/signup'));
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/forgot-password'));
 const ResetPasswordPage = lazy(() => import('@/pages/auth/reset-password'));
+const ClaimantDetailsPage = lazy(() => import('@/pages/claims/claimant-details'));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -35,6 +36,10 @@ const routes: RouteObject[] = [
   {
     path: '/reset-password',
     element: <ResetPasswordPage />,
+  },
+  {
+    path: '/claims/claimant-details',
+    element: <ClaimantDetailsPage />,
   },
 ];
 
