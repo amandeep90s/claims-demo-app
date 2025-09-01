@@ -8,9 +8,11 @@ import {
   ClaimantHeader,
   ClaimantList,
   ClaimantSidebar,
+  ExitClaimButton,
   PolicyHolderDetails,
   type ClaimantData,
 } from '@/components/claimantDetails';
+import { ExitModal } from '@/components/common';
 import { claimantSchema, type ClaimantFormData } from '@/schemas/claimant';
 
 const ClaimantDetailsPage: React.FC = () => {
@@ -38,6 +40,15 @@ const ClaimantDetailsPage: React.FC = () => {
   ]);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  // Exit modal state
+  const [isExitModalOpen, setExitModalOpen] = useState(false);
+  const handleExitOpen = () => setExitModalOpen(true);
+  const handleExitClose = () => setExitModalOpen(false);
+  const handleExitConfirm = () => {
+    // Navigate to dashboard (replace with your router logic)
+    window.location.href = '/';
+  };
 
   // Form setup
   const {
@@ -146,6 +157,7 @@ const ClaimantDetailsPage: React.FC = () => {
           <div className='w-full'>
             <div className='mb-6 flex items-center justify-between'>
               <h2 className='text-2xl font-bold text-gray-900'>Claimant Details</h2>
+              <ExitClaimButton onClick={handleExitOpen} />
             </div>
 
             <PolicyHolderDetails selectedClaimant={selectedClaimant} onSelectedClaimantChange={setSelectedClaimant} />
@@ -168,6 +180,9 @@ const ClaimantDetailsPage: React.FC = () => {
               onClose={handleModalClose}
               onSubmit={onSubmit}
             />
+
+            {/* Exit Modal */}
+            <ExitModal isOpen={isExitModalOpen} onClose={handleExitClose} onConfirm={handleExitConfirm} />
 
             {/* Next Button */}
             <div className='mt-8 flex justify-end'>
