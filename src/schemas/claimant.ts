@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
-// Claimant Schema
+// Main Claimant Details Page Schema
+export const claimantDetailsPageSchema = z.object({
+  policyHolder: z.string().min(1, 'Please select a policy holder'),
+  isClaimantSameAsPolicyHolder: z.string().min(1, 'Please select if claimant is same as policy holder'),
+  selectedClaimants: z.array(z.number()).min(1, 'At least one claimant must be selected'),
+});
+
+// Claimant Schema (for modal form)
 export const claimantSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name must not exceed 100 characters'),
   isClaimant: z.string().min(1, 'Please select if you are a claimant'),
@@ -26,5 +33,6 @@ export const claimantSchema = z.object({
   isPolicyHolder: z.string().min(1, 'Please select if you are a policy holder'),
 });
 
-// Type export
+// Type exports
+export type ClaimantDetailsPageFormData = z.infer<typeof claimantDetailsPageSchema>;
 export type ClaimantFormData = z.infer<typeof claimantSchema>;

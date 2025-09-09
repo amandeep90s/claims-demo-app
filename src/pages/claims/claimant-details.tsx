@@ -13,10 +13,14 @@ import {
   type ClaimantData,
 } from '@/components/claimantDetails';
 import { ExitModal } from '@/components/common';
-import { claimantSchema, type ClaimantFormData } from '@/schemas/claimant';
+import {
+  claimantDetailsPageSchema,
+  claimantSchema,
+  type ClaimantDetailsPageFormData,
+  type ClaimantFormData,
+} from '@/schemas/claimant';
 
 const ClaimantDetailsPage: React.FC = () => {
-  const [selectedClaimant, setSelectedClaimant] = useState('no');
   const [editingClaimant, setEditingClaimant] = useState<ClaimantData | null>(null);
   const [claimants, setClaimants] = useState<ClaimantData[]>([
     {
@@ -50,7 +54,23 @@ const ClaimantDetailsPage: React.FC = () => {
     window.location.href = '/';
   };
 
-  // Form setup
+  // Main page form setup
+  const {
+    register: pageRegister,
+    handleSubmit: handlePageSubmit,
+    setValue: pageSetValue,
+    watch: pageWatch,
+    formState: { errors: pageErrors },
+  } = useForm<ClaimantDetailsPageFormData>({
+    resolver: zodResolver(claimantDetailsPageSchema),
+    defaultValues: {
+      policyHolder: '',
+      isClaimantSameAsPolicyHolder: '',
+      selectedClaimants: [],
+    },
+  });
+
+  // Modal form setup
   const {
     register,
     handleSubmit,
@@ -60,6 +80,12 @@ const ClaimantDetailsPage: React.FC = () => {
   } = useForm<ClaimantFormData>({
     resolver: zodResolver(claimantSchema),
   });
+
+  const onPageSubmit = (data: ClaimantDetailsPageFormData) => {
+    // Handle form submission - navigate to next step
+    // eslint-disable-next-line no-console
+    console.log('Page form data:', data);
+  };
 
   const onSubmit = (data: ClaimantFormData) => {
     if (editingClaimant) {
@@ -113,10 +139,6 @@ const ClaimantDetailsPage: React.FC = () => {
     setClaimants(claimants.filter((claimant) => claimant.id !== id));
   };
 
-  const handleClaimantSelection = (id: number, selected: boolean) => {
-    setClaimants(claimants.map((claimant) => (claimant.id === id ? { ...claimant, selected } : claimant)));
-  };
-
   const handleAddClaimant = () => {
     setEditingClaimant(null);
     reset();
@@ -154,18 +176,21 @@ const ClaimantDetailsPage: React.FC = () => {
 
         {/* Main Content */}
         <main className='flex-1 p-6'>
-          <div className='w-full'>
+          <form className='w-full' onSubmit={handlePageSubmit(onPageSubmit)}>
             <div className='mb-6 flex items-center justify-between'>
               <h2 className='text-2xl font-bold text-gray-900'>Claimant Details</h2>
               <ExitClaimButton onClick={handleExitOpen} />
             </div>
 
-            <PolicyHolderDetails selectedClaimant={selectedClaimant} onSelectedClaimantChange={setSelectedClaimant} />
+            <PolicyHolderDetails errors={pageErrors} register={pageRegister} />
 
             <ClaimantList
               claimants={claimants}
+              errors={pageErrors}
+              register={pageRegister}
+              setValue={pageSetValue}
+              watch={pageWatch}
               onAddClaimant={handleAddClaimant}
-              onClaimantSelection={handleClaimantSelection}
               onDeleteClaimant={handleDeleteClaimant}
               onEditClaimant={handleEditClaimant}
             />
@@ -186,11 +211,11 @@ const ClaimantDetailsPage: React.FC = () => {
 
             {/* Next Button */}
             <div className='mt-8 flex justify-end'>
-              <Button className='px-8' color='primary' size='lg'>
+              <Button className='px-8' color='primary' size='lg' type='submit'>
                 Next: Incident Type
               </Button>
             </div>
-          </div>
+          </form>
         </main>
       </div>
     </div>

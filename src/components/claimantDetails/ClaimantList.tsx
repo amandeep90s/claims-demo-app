@@ -1,3 +1,5 @@
+import type { ClaimantDetailsPageFormData } from '@/schemas/claimant';
+import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import type { ClaimantData } from './ClaimantListItem';
 
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -6,21 +8,43 @@ import React from 'react';
 
 interface ClaimantListProps {
   claimants: ClaimantData[];
+  register: UseFormRegister<ClaimantDetailsPageFormData>;
+  setValue: UseFormSetValue<ClaimantDetailsPageFormData>;
+  watch: UseFormWatch<ClaimantDetailsPageFormData>;
+  errors: FieldErrors<ClaimantDetailsPageFormData>;
   onAddClaimant: () => void;
   onEditClaimant: (claimant: ClaimantData) => void;
   onDeleteClaimant: (id: number) => void;
-  onClaimantSelection: (id: number, selected: boolean) => void;
 }
 
 const ClaimantList: React.FC<ClaimantListProps> = ({
   claimants,
+  register,
+  setValue,
+  watch,
+  errors,
   onAddClaimant,
   onEditClaimant,
   onDeleteClaimant,
-  onClaimantSelection,
 }) => {
+  const selectedClaimants = watch('selectedClaimants') || [];
+
+  const handleClaimantSelection = (claimantId: number, selected: boolean) => {
+    if (selected) {
+      setValue('selectedClaimants', [...selectedClaimants, claimantId]);
+    } else {
+      setValue(
+        'selectedClaimants',
+        selectedClaimants.filter((id: number) => id !== claimantId)
+      );
+    }
+  };
+
   return (
     <div className='rounded-lg bg-white p-6'>
+      {/* Hidden input to register the field with react-hook-form */}
+      <input {...register('selectedClaimants')} style={{ display: 'none' }} type='hidden' />
+
       <div className='mb-4 flex w-full items-center justify-between'>
         <h3 className='text-lg font-semibold text-gray-900'>Claimant Details</h3>
         <Button
@@ -49,12 +73,12 @@ const ClaimantList: React.FC<ClaimantListProps> = ({
                 <div className='flex w-full items-center justify-between'>
                   <div className='flex items-center gap-3'>
                     <Checkbox
-                      isSelected={claimant.selected}
+                      isSelected={selectedClaimants.includes(claimant.id)}
                       radius='none'
                       size='lg'
                       onClick={(e) => e.stopPropagation()}
                       onValueChange={(selected) => {
-                        onClaimantSelection(claimant.id, selected);
+                        handleClaimantSelection(claimant.id, selected);
                       }}
                     />
                     <div className='flex items-center gap-2'>
@@ -120,6 +144,7 @@ const ClaimantList: React.FC<ClaimantListProps> = ({
           ))}
         </Accordion>
       </div>
+      {errors.selectedClaimants && <p className='mt-2 text-sm text-red-600'>{errors.selectedClaimants.message}</p>}
     </div>
   );
 };
