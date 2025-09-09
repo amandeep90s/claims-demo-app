@@ -43,6 +43,13 @@ const ClaimantDetailsPage: React.FC = () => {
     },
   ]);
 
+  // Utility function to generate next unique ID
+  const generateNextId = (existingClaimants: ClaimantData[]): number => {
+    if (existingClaimants.length === 0) return 1;
+
+    return Math.max(...existingClaimants.map((c) => c.id)) + 1;
+  };
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   // Exit modal state
@@ -77,6 +84,7 @@ const ClaimantDetailsPage: React.FC = () => {
     formState: { errors, isSubmitting },
     reset,
     setValue,
+    clearErrors,
   } = useForm<ClaimantFormData>({
     resolver: zodResolver(claimantSchema),
   });
@@ -108,9 +116,9 @@ const ClaimantDetailsPage: React.FC = () => {
       setClaimants(claimants.map((claimant) => (claimant.id === editingClaimant.id ? updatedClaimant : claimant)));
       setEditingClaimant(null);
     } else {
-      // Add new claimant
+      // Add new claimant - generate ID based on the highest existing ID
       const newClaimant = {
-        id: claimants.length + 1,
+        id: generateNextId(claimants),
         name: data.name,
         completed: false,
         selected: false,
@@ -129,24 +137,39 @@ const ClaimantDetailsPage: React.FC = () => {
       };
 
       setClaimants([...claimants, newClaimant]);
+
+      // Automatically select the newly added claimant
+      const currentSelectedClaimants = pageWatch('selectedClaimants') || [];
+
+      pageSetValue('selectedClaimants', [...currentSelectedClaimants, newClaimant.id]);
     }
 
     reset();
+    clearErrors(); // Clear any validation errors
     handleModalClose();
   };
 
   const handleDeleteClaimant = (id: number) => {
     setClaimants(claimants.filter((claimant) => claimant.id !== id));
+
+    // Remove the deleted claimant from selected claimants if it was selected
+    const currentSelectedClaimants = pageWatch('selectedClaimants') || [];
+    const updatedSelectedClaimants = currentSelectedClaimants.filter((claimantId: number) => claimantId !== id);
+
+    pageSetValue('selectedClaimants', updatedSelectedClaimants);
   };
 
   const handleAddClaimant = () => {
     setEditingClaimant(null);
     reset();
+    clearErrors(); // Clear any existing validation errors
     onOpen();
   };
 
   const handleEditClaimant = (claimant: ClaimantData) => {
     setEditingClaimant(claimant);
+    reset(); // Reset form first
+    clearErrors(); // Clear any existing validation errors
     // Pre-populate form with existing data
     setValue('name', claimant.name);
     setValue('gender', claimant.gender);
@@ -164,6 +187,7 @@ const ClaimantDetailsPage: React.FC = () => {
   const handleModalClose = () => {
     setEditingClaimant(null);
     reset();
+    clearErrors(); // Clear any existing validation errors
     onOpenChange();
   };
 
