@@ -84,7 +84,7 @@ const LandingPage = () => {
                 comprehensive coverage, with a personalized approach because we un...
               </p>
               <div className='flex gap-3'>
-                <Link to='/claims/claimant-details'>
+                <Link to='/claims/file-claim'>
                   <button className='btn btn-primary btn-sm'>Submit Online</button>
                 </Link>
                 <button className='btn btn-outline btn-sm'>Download Claim Form</button>
