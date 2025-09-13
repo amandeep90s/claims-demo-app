@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import SidebarStepper from './SidebarStepper';
-import { ClaimantDetailsForm, ClaimTypeForm, IncidentDetailsForm, PolicyDetailsForm, ReviewDetailsForm } from './steps';
+import { ClaimantDetailsForm, ClaimTypeForm, IncidentDetailsForm, PolicyDetailsForm } from './steps';
 
 import { ClaimantHeader, ExitClaimButton } from '@/components/claimantDetails';
 import { ExitModal } from '@/components/common';
+import ReviewPage from '@/pages/claims/review';
 import {
   type ClaimantDetailsFormData,
   type ClaimTypeFormData,
@@ -131,7 +132,7 @@ export default function ClaimsStepper() {
 
       case 'review-details':
         return (
-          <ReviewDetailsForm
+          <ReviewPage
             canGoPrevious={canGoPrevious()}
             isSubmitting={isSubmitting}
             onFinalSubmit={handleFinalSubmit}
