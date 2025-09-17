@@ -1,11 +1,10 @@
-import { Checkbox } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import StepNavigation from '../StepNavigation';
 
-import { TextareaField } from '@/components/ui';
+import { CheckboxField, TextareaField } from '@/components/ui';
 import { reviewDetailsSchema, type ReviewDetailsFormData } from '@/schemas/claims';
 import { useClaimsFormStore } from '@/store/claimsFormStore';
 
@@ -158,33 +157,17 @@ export default function ReviewDetailsForm({
 
       <form className='space-y-6' onSubmit={handleSubmit(handleFormSubmit)}>
         <div className='space-y-4'>
-          <Controller
+          <CheckboxField
             control={control}
+            label='I confirm that all the information provided above is accurate and complete to the best of my knowledge.'
             name='confirmAccuracy'
-            render={({ field }) => (
-              <Checkbox isInvalid={!!errors.confirmAccuracy} isSelected={field.value} onValueChange={field.onChange}>
-                <span className='text-sm'>
-                  I confirm that all the information provided above is accurate and complete to the best of my
-                  knowledge.
-                </span>
-              </Checkbox>
-            )}
           />
-          {errors.confirmAccuracy && <p className='text-sm text-red-600'>{errors.confirmAccuracy.message}</p>}
 
-          <Controller
+          <CheckboxField
             control={control}
+            label='I accept the terms and conditions and understand that providing false information may result in claim denial.'
             name='termsAccepted'
-            render={({ field }) => (
-              <Checkbox isInvalid={!!errors.termsAccepted} isSelected={field.value} onValueChange={field.onChange}>
-                <span className='text-sm'>
-                  I accept the terms and conditions and understand that providing false information may result in claim
-                  denial.
-                </span>
-              </Checkbox>
-            )}
           />
-          {errors.termsAccepted && <p className='text-sm text-red-600'>{errors.termsAccepted.message}</p>}
         </div>
 
         <TextareaField

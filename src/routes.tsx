@@ -8,7 +8,6 @@ const SignupPage = lazy(() => import('@/pages/auth/signup'));
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/forgot-password'));
 const ResetPasswordPage = lazy(() => import('@/pages/auth/reset-password'));
 const ClaimantDetailsPage = lazy(() => import('@/pages/claims/claimant-details'));
-const ReviewPage = lazy(() => import('@/pages/claims/review'));
 const FileClaimPage = lazy(() => import('@/pages/claims/file-claim'));
 
 // Loading component
@@ -46,10 +45,6 @@ const routes: RouteObject[] = [
   {
     path: '/claims/file-claim',
     element: <FileClaimPage />,
-  },
-  {
-    path: '/claims/review',
-    element: <ReviewPage />,
   },
 ];
 

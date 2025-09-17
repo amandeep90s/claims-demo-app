@@ -6,7 +6,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 
 import StepNavigation from '../StepNavigation';
 
-import { FormField, TextareaField } from '@/components/ui';
+import { FormField, TextareaField, TimePickerField } from '@/components/ui';
 import { incidentDetailsSchema, type IncidentDetailsFormData } from '@/schemas/claims';
 import { useClaimsFormStore } from '@/store/claimsFormStore';
 
@@ -90,7 +90,7 @@ export default function IncidentDetailsForm({
         <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
           <FormField {...register('incidentDate')} error={errors.incidentDate} label='Incident Date' type='date' />
 
-          <FormField {...register('incidentTime')} error={errors.incidentTime} label='Incident Time' type='time' />
+          <TimePickerField control={control} label='Incident Time' name='incidentTime' required={true} />
         </div>
 
         <FormField

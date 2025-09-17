@@ -1,8 +1,10 @@
 import type { ClaimantDetailsPageFormData } from '@/schemas/claimant';
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 
-import { Radio, RadioGroup, Select, SelectItem } from '@heroui/react';
+import { Select, SelectItem } from '@heroui/react';
 import React from 'react';
+
+import { RadioGroupField } from '../ui';
 
 interface PolicyHolderDetailsProps {
   register: UseFormRegister<ClaimantDetailsPageFormData>;
@@ -28,33 +30,17 @@ const PolicyHolderDetails: React.FC<PolicyHolderDetailsProps> = ({ register, err
         </Select>
 
         <div className='mt-6'>
-          <p className='mb-3 text-sm font-medium text-gray-900'>Is claimant same as Policy holder?</p>
-          <RadioGroup
-            {...register('isClaimantSameAsPolicyHolder')}
-            className='gap-6'
-            errorMessage={errors.isClaimantSameAsPolicyHolder?.message}
-            isInvalid={!!errors.isClaimantSameAsPolicyHolder}
+          <RadioGroupField
+            label='Is claimant same as Policy holder?'
+            name='isClaimantSameAsPolicyHolder'
+            options={[
+              { value: 'yes', label: 'Yes' },
+              { value: 'no', label: 'No' },
+            ]}
             orientation='horizontal'
-          >
-            <Radio
-              classNames={{
-                wrapper: 'border-teal-800 group-data-[selected=true]:border-teal-800', // Ring
-                control: 'bg-teal-800', // Circle (dot)
-              }}
-              value='yes'
-            >
-              Yes
-            </Radio>
-            <Radio
-              classNames={{
-                wrapper: 'border-teal-800 group-data-[selected=true]:border-teal-800', // Ring
-                control: 'bg-teal-800', // Circle (dot)
-              }}
-              value='no'
-            >
-              No
-            </Radio>
-          </RadioGroup>
+            register={register}
+            required={true}
+          />
         </div>
       </div>
     </div>

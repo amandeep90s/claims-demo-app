@@ -7,14 +7,13 @@ import {
   ShieldCheckIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
-import { Checkbox } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import StepNavigation from '@/components/claims/StepNavigation';
 import { DataGrid, ReviewSection, StatusIndicator } from '@/components/review';
-import { TextareaField } from '@/components/ui';
+import { CheckboxField, TextareaField } from '@/components/ui';
 import { reviewDetailsSchema, type ReviewDetailsFormData } from '@/schemas/claims';
 import { useClaimsFormStore } from '@/store/claimsFormStore';
 
@@ -212,41 +211,19 @@ const ReviewPage: React.FC<ReviewPageProps> = ({
             <h3 className='mb-4 text-lg font-semibold text-gray-900'>Final Confirmation</h3>
 
             <div className='space-y-4'>
-              <Controller
+              <CheckboxField
+                required
                 control={control}
+                label='I confirm that all the information provided above is accurate and complete to the best of my knowledge.'
                 name='confirmAccuracy'
-                render={({ field }) => (
-                  <Checkbox
-                    color={errors.confirmAccuracy ? 'danger' : 'primary'}
-                    isSelected={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <span className='text-sm'>
-                      I confirm that all the information provided above is accurate and complete to the best of my
-                      knowledge.
-                    </span>
-                  </Checkbox>
-                )}
               />
-              {errors.confirmAccuracy && <p className='text-sm text-red-600'>{errors.confirmAccuracy.message}</p>}
 
-              <Controller
+              <CheckboxField
+                required
                 control={control}
+                label='I accept the terms and conditions and understand that providing false information may result in claim denial.'
                 name='termsAccepted'
-                render={({ field }) => (
-                  <Checkbox
-                    color={errors.termsAccepted ? 'danger' : 'primary'}
-                    isSelected={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <span className='text-sm'>
-                      I accept the terms and conditions and understand that providing false information may result in
-                      claim denial.
-                    </span>
-                  </Checkbox>
-                )}
               />
-              {errors.termsAccepted && <p className='text-sm text-red-600'>{errors.termsAccepted.message}</p>}
             </div>
 
             <TextareaField
