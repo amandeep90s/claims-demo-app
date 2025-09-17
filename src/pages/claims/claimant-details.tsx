@@ -85,8 +85,21 @@ const ClaimantDetailsPage: React.FC = () => {
     reset,
     setValue,
     clearErrors,
+    control,
   } = useForm<ClaimantFormData>({
     resolver: zodResolver(claimantSchema),
+    defaultValues: {
+      name: '',
+      isClaimant: '',
+      gender: '',
+      dateOfBirth: '',
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      postalCode: '',
+      country: '',
+      isPolicyHolder: '',
+    },
   });
 
   const onPageSubmit = (data: ClaimantDetailsPageFormData) => {
@@ -220,6 +233,7 @@ const ClaimantDetailsPage: React.FC = () => {
             />
 
             <ClaimantFormModal
+              control={control}
               editingClaimant={editingClaimant}
               errors={errors}
               handleSubmit={handleSubmit}

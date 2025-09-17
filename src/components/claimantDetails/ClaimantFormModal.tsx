@@ -1,10 +1,10 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/react';
 import React from 'react';
-import { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
+import { Control, FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 
 import { type ClaimantData } from './ClaimantListItem';
 
-import { FormField, SelectField } from '@/components/ui';
+import { DatePicker, FormField, SelectField } from '@/components/ui';
 import { type ClaimantFormData } from '@/schemas/claimant';
 
 interface ClaimantFormModalProps {
@@ -13,6 +13,7 @@ interface ClaimantFormModalProps {
   isSubmitting: boolean;
   errors: FieldErrors<ClaimantFormData>;
   register: UseFormRegister<ClaimantFormData>;
+  control: Control<ClaimantFormData>;
   handleSubmit: UseFormHandleSubmit<ClaimantFormData>;
   onSubmit: (data: ClaimantFormData) => void;
   onClose: () => void;
@@ -24,6 +25,7 @@ const ClaimantFormModal: React.FC<ClaimantFormModalProps> = ({
   isSubmitting,
   errors,
   register,
+  control,
   handleSubmit,
   onSubmit,
   onClose,
@@ -69,12 +71,7 @@ const ClaimantFormModal: React.FC<ClaimantFormModalProps> = ({
                     placeholder='Select gender'
                   />
 
-                  <FormField
-                    label='Date of Birth'
-                    type='date'
-                    {...register('dateOfBirth')}
-                    error={errors.dateOfBirth}
-                  />
+                  <DatePicker<ClaimantFormData> control={control} label='Date of Birth' name='dateOfBirth' />
                 </div>
 
                 <div className='space-y-4'>
