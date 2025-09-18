@@ -1,5 +1,6 @@
 import {
   ClipboardDocumentListIcon,
+  ExclamationCircleIcon,
   ExclamationTriangleIcon,
   EyeIcon,
   IdentificationIcon,
@@ -31,6 +32,11 @@ const steps = [
     key: 'claimant-details',
     label: 'Claimant Details',
     icon: IdentificationIcon,
+  },
+  {
+    key: 'incident-type',
+    label: 'Incident Type',
+    icon: ExclamationCircleIcon,
   },
   {
     key: 'incident-details',

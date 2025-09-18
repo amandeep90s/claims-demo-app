@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 
-export type ClaimStep = 'claim-type' | 'policy-details' | 'claimant-details' | 'incident-details' | 'review-details';
+export type ClaimStep =
+  | 'claim-type'
+  | 'policy-details'
+  | 'claimant-details'
+  | 'incident-type'
+  | 'incident-details'
+  | 'review-details';
 
 interface ClaimsFormState {
   currentStep: ClaimStep;
@@ -11,6 +17,7 @@ interface ClaimsFormState {
     'claim-type': Record<string, any>;
     'policy-details': Record<string, any>;
     'claimant-details': Record<string, any>;
+    'incident-type': Record<string, any>;
     'incident-details': Record<string, any>;
     'review-details': Record<string, any>;
   };
@@ -20,6 +27,7 @@ interface ClaimsFormState {
   markStepAsCompleted: (step: ClaimStep) => void;
   setFormData: (screenId: ClaimStep, data: Record<string, any>) => void;
   getStepData: (step: ClaimStep) => Record<string, any>;
+  clearIncidentDetailsDynamicFields: () => void;
 
   // Navigation helpers
   goToNextStep: () => void;
@@ -35,6 +43,7 @@ interface ClaimsFormState {
     claimType: Record<string, any>;
     policyDetails: Record<string, any>;
     claimantDetails: Record<string, any>;
+    incidentType: Record<string, any>;
     incidentDetails: Record<string, any>;
     reviewDetails: Record<string, any>;
   };
@@ -44,6 +53,7 @@ const stepOrder: ClaimStep[] = [
   'claim-type',
   'policy-details',
   'claimant-details',
+  'incident-type',
   'incident-details',
   'review-details',
 ];
@@ -56,6 +66,7 @@ export const useClaimsFormStore = create<ClaimsFormState>((set, get) => ({
     'claim-type': {},
     'policy-details': {},
     'claimant-details': {},
+    'incident-type': {},
     'incident-details': {},
     'review-details': {},
   },
@@ -80,6 +91,45 @@ export const useClaimsFormStore = create<ClaimsFormState>((set, get) => ({
 
     return state.formData[step] || {};
   },
+
+  clearIncidentDetailsDynamicFields: () =>
+    set((state) => {
+      const currentIncidentDetails = state.formData['incident-details'];
+
+      // Define all dynamic field keys that should be cleared
+      const dynamicFieldKeys = [
+        'flightNumber',
+        'departureDate',
+        'arrivalDate',
+        'delayDuration',
+        'cancellationReason',
+        'medicalFacility',
+        'diagnosisCode',
+        'treatmentDate',
+        'baggageClaimNumber',
+        'itemsLost',
+        'purchaseReceipts',
+      ];
+
+      // Create new incident details object without dynamic fields
+      const clearedIncidentDetails = Object.keys(currentIncidentDetails).reduce(
+        (acc, key) => {
+          if (!dynamicFieldKeys.includes(key)) {
+            acc[key] = currentIncidentDetails[key];
+          }
+
+          return acc;
+        },
+        {} as Record<string, any>
+      );
+
+      return {
+        formData: {
+          ...state.formData,
+          'incident-details': clearedIncidentDetails,
+        },
+      };
+    }),
 
   goToNextStep: () => {
     const { currentStep } = get();
@@ -121,6 +171,7 @@ export const useClaimsFormStore = create<ClaimsFormState>((set, get) => ({
         'claim-type': {},
         'policy-details': {},
         'claimant-details': {},
+        'incident-type': {},
         'incident-details': {},
         'review-details': {},
       },
@@ -133,6 +184,7 @@ export const useClaimsFormStore = create<ClaimsFormState>((set, get) => ({
       claimType: state.formData['claim-type'],
       policyDetails: state.formData['policy-details'],
       claimantDetails: state.formData['claimant-details'],
+      incidentType: state.formData['incident-type'],
       incidentDetails: state.formData['incident-details'],
       reviewDetails: state.formData['review-details'],
     };

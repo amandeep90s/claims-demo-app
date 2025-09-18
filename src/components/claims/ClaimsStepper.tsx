@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import SidebarStepper from './SidebarStepper';
-import { ClaimantDetailsForm, ClaimTypeForm, IncidentDetailsForm, PolicyDetailsForm } from './steps';
+import { ClaimantDetailsForm, ClaimTypeForm, IncidentDetailsForm, IncidentTypeForm, PolicyDetailsForm } from './steps';
 
 import { ClaimantHeader, ExitClaimButton } from '@/components/claimantDetails';
 import { ExitModal } from '@/components/common';
@@ -11,6 +11,7 @@ import {
   type ClaimantDetailsFormData,
   type ClaimTypeFormData,
   type IncidentDetailsFormData,
+  type IncidentTypeFormData,
   type PolicyDetailsFormData,
   type ReviewDetailsFormData,
 } from '@/schemas/claims';
@@ -115,6 +116,18 @@ export default function ClaimsStepper() {
             onNext={goToNextStep}
             onPrevious={goToPreviousStep}
             onSubmit={(_data: ClaimantDetailsFormData) => handleStepSubmit('claimant-details')}
+          />
+        );
+
+      case 'incident-type':
+        return (
+          <IncidentTypeForm
+            canGoNext={canGoNext()}
+            canGoPrevious={canGoPrevious()}
+            isSubmitting={isSubmitting}
+            onNext={goToNextStep}
+            onPrevious={goToPreviousStep}
+            onSubmit={(_data: IncidentTypeFormData) => handleStepSubmit('incident-type')}
           />
         );
 

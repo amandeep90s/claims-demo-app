@@ -46,7 +46,7 @@ export default function StepNavigation({
         className='min-w-24'
         color='primary'
         endContent={<ArrowRightIcon className='h-4 w-4' />}
-        isDisabled={!isCurrentStepValid || isSubmitting || (!canGoNext && !isLastStep)}
+        // isDisabled={!isCurrentStepValid || isSubmitting || (!canGoNext && !isLastStep)}
         isLoading={isSubmitting}
         onPress={handleNextClick}
       >
