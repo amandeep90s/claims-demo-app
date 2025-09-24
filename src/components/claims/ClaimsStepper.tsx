@@ -16,6 +16,7 @@ import {
   type ReviewDetailsFormData,
 } from '@/schemas/claims';
 import { type ClaimStep, useClaimsFormStore } from '@/store/claimsFormStore';
+import { submitClaim } from '@/utils/mockAPI';
 
 export default function ClaimsStepper() {
   const [isExitModalOpen, setExitModalOpen] = useState(false);
@@ -55,27 +56,66 @@ export default function ClaimsStepper() {
     }
   };
 
-  const handleFinalSubmit = async () => {
+  const handleFinalSubmit = async (pdfResponse?: any) => {
     setIsSubmitting(true);
     try {
       const allData = getAllFormData();
 
+      // Prepare the final claim submission payload
+      const claimPayload = {
+        ...allData,
+        // Include PDF response if available
+        ...(pdfResponse && {
+          attachments: [
+            {
+              type: 'claim-review-pdf',
+              fileId: pdfResponse.fileId,
+              fileName: pdfResponse.fileName,
+              fileUrl: pdfResponse.fileUrl,
+              uploadedAt: pdfResponse.uploadedAt,
+            },
+          ],
+        }),
+        submittedAt: new Date().toISOString(),
+        status: 'submitted',
+      };
+
       // eslint-disable-next-line no-console
-      console.log('Final claim submission:', allData);
+      console.log('Final claim submission with PDF:', claimPayload);
 
-      // Here you would normally send the data to your API
-      // await submitClaim(allData);
+      if (pdfResponse) {
+        // eslint-disable-next-line no-console
+        console.log('📎 PDF attachment URL for final submission:', pdfResponse.fileUrl);
+      }
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Use the mock API for claim submission
+      const claimResponse = await submitClaim(claimPayload);
 
-      alert('Claim submitted successfully!');
+      // eslint-disable-next-line no-console
+      console.log('Claim submitted successfully:', claimResponse);
+
+      alert(`Claim submitted successfully!${pdfResponse ? ' PDF document has been attached to your claim.' : ''}`);
+
       // Navigate to success page or dashboard
       navigate('/');
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to submit claim:', error);
-      alert('Failed to submit claim. Please try again.');
+
+      // Provide more specific error message based on error type
+      let errorMessage = 'Failed to submit claim. Please try again.';
+
+      if (error instanceof Error) {
+        if (error.message.includes('Upload failed')) {
+          errorMessage = 'Failed to upload PDF document. Please try again.';
+        } else if (error.message.includes('Claim submission failed')) {
+          errorMessage = 'Failed to submit claim data. Please check your information and try again.';
+        } else if (error.message.includes('PDF generation')) {
+          errorMessage = 'Failed to generate PDF document. Please try again.';
+        }
+      }
+
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

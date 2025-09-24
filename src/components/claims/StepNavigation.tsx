@@ -14,8 +14,8 @@ interface StepNavigationProps {
 
 export default function StepNavigation({
   canGoPrevious,
-  canGoNext,
-  isCurrentStepValid = false,
+  canGoNext: _canGoNext,
+  isCurrentStepValid: _isCurrentStepValid = false,
   isSubmitting = false,
   isLastStep = false,
   onPrevious,

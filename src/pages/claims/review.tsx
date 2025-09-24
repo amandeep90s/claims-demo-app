@@ -13,14 +13,16 @@ import { useForm } from 'react-hook-form';
 
 import StepNavigation from '@/components/claims/StepNavigation';
 import { DataGrid, ReviewSection, StatusIndicator } from '@/components/review';
+import PDFContentSafe from '@/components/review/PDFContentSafe';
 import { CheckboxField, TextareaField } from '@/components/ui';
+import { usePDFGeneration } from '@/hooks';
 import { reviewDetailsSchema, type ReviewDetailsFormData } from '@/schemas/claims';
 import { useClaimsFormStore } from '@/store/claimsFormStore';
 
 interface ReviewPageProps {
   onSubmit: (data: ReviewDetailsFormData) => void;
   onPrevious: () => void;
-  onFinalSubmit: () => void;
+  onFinalSubmit: (pdfResponse?: any) => void;
   canGoPrevious: boolean;
   isSubmitting?: boolean;
 }
@@ -32,6 +34,25 @@ const ReviewPage: React.FC<ReviewPageProps> = ({
   canGoPrevious,
   isSubmitting = false,
 }) => {
+  // PDF generation hook
+  const {
+    targetRef,
+    generateAndUploadPDF,
+    generatePDFOnly, // Browser preview
+    isProcessing: isPDFProcessing,
+    uploadResponse, // Contains fileUrl from upload API
+  } = usePDFGeneration({
+    onUploadSuccess: (response) => {
+      // eslint-disable-next-line no-console
+      console.log('PDF uploaded successfully. File URL:', response.fileUrl);
+    },
+    onUploadError: (error) => {
+      // eslint-disable-next-line no-console
+      console.error('PDF upload failed:', error);
+      // You could show a toast/notification here
+    },
+  });
+
   // Form handling for review details
   const { setFormData, getStepData, getAllFormData } = useClaimsFormStore();
   const reviewDetailsData = getStepData('review-details');
@@ -61,10 +82,24 @@ const ReviewPage: React.FC<ReviewPageProps> = ({
     return () => subscription.unsubscribe();
   }, [watch, setFormData]);
 
-  const handleFormSubmit = (data: ReviewDetailsFormData) => {
+  const handleFormSubmit = async (data: ReviewDetailsFormData) => {
     setFormData('review-details', data);
     onSubmit(data);
-    onFinalSubmit(); // Trigger final submission
+
+    try {
+      // Generate and upload PDF before final submission
+      const pdfResponse = await generateAndUploadPDF();
+
+      // Call final submit with the PDF response
+      onFinalSubmit(pdfResponse);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('PDF generation failed during final submit:', error);
+
+      // Still proceed with final submit even if PDF fails
+      // You might want to show a warning to the user here
+      onFinalSubmit();
+    }
   };
 
   // Get form data from store
@@ -126,9 +161,42 @@ const ReviewPage: React.FC<ReviewPageProps> = ({
 
   return (
     <div className='space-y-6'>
+      {/* Hidden PDF Content for generation */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        <div ref={targetRef}>
+          <PDFContentSafe allFormData={allFormData} />
+        </div>
+      </div>
+
       <div>
         <h2 className='text-3xl font-bold text-gray-900'>Review Your Claim</h2>
         <p className='mt-2 text-gray-600'>Please review all information before submitting your claim</p>
+
+        {/* PDF Preview Button */}
+        <div className='mt-4 flex gap-2'>
+          <button
+            className='inline-flex items-center gap-2 rounded-md bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100'
+            disabled={isPDFProcessing}
+            type='button'
+            onClick={generatePDFOnly}
+          >
+            {isPDFProcessing ? (
+              <>
+                <span className='h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent' />
+                Generating...
+              </>
+            ) : (
+              <>📄 Preview PDF</>
+            )}
+          </button>
+
+          {uploadResponse && (
+            <div className='flex items-center gap-2 text-sm text-gray-600'>
+              <span className='inline-block h-2 w-2 rounded-full bg-green-500' />
+              PDF uploaded: <span className='font-mono text-xs'>{uploadResponse.fileName}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className='space-y-6'>
@@ -240,7 +308,7 @@ const ReviewPage: React.FC<ReviewPageProps> = ({
             canGoPrevious={canGoPrevious}
             isCurrentStepValid={isValid}
             isLastStep={true}
-            isSubmitting={isSubmitting}
+            isSubmitting={isSubmitting || isPDFProcessing}
             onFinalSubmit={() => handleSubmit(handleFormSubmit)()}
             onNext={() => {}}
             onPrevious={onPrevious}

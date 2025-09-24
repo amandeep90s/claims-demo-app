@@ -60,7 +60,7 @@ export default function IncidentDetailsForm({
     handleSubmit,
     watch,
     control,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<IncidentDetailsFormData>({
     resolver: zodResolver(currentSchema),
     mode: 'onChange',

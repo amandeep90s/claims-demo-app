@@ -37,7 +37,7 @@ export const DatePicker = <
           const fieldValue = field.value || '';
 
           // Convert string value to CalendarDate for DatePicker
-          const dateValue = fieldValue ? parseDate(fieldValue) : null;
+          const dateValue: CalendarDate | null = fieldValue ? parseDate(fieldValue) : null;
 
           // Handle date change and convert back to string
           const handleDateChange = (date: CalendarDate | CalendarDateTime | ZonedDateTime | null) => {
@@ -54,6 +54,7 @@ export const DatePicker = <
 
           return (
             <I18nProvider locale='en-GB'>
+              {/* @ts-expect-error - Version mismatch in @internationalized/date causes type conflicts */}
               <HeroDatePicker
                 classNames={{
                   input: cn(formFieldStyles.input),
@@ -64,7 +65,7 @@ export const DatePicker = <
                 isInvalid={!!fieldState.error}
                 label={label}
                 size='lg'
-                value={dateValue}
+                value={dateValue as any}
                 variant='bordered'
                 onBlur={handleBlur}
                 onChange={handleDateChange}
