@@ -12,6 +12,7 @@ interface UsePDFGenerationProps {
 export const usePDFGeneration = ({ onUploadSuccess, onUploadError }: UsePDFGenerationProps = {}) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [lastGeneratedBlob, setLastGeneratedBlob] = useState<Blob | null>(null);
+  const [useTextMode, setUseTextMode] = useState(false); // Toggle between image and text mode
 
   // Create our own target ref since we no longer use react-to-pdf
   const targetRef = useRef<HTMLDivElement>(null);
@@ -19,18 +20,66 @@ export const usePDFGeneration = ({ onUploadSuccess, onUploadError }: UsePDFGener
   // Initialize the document upload flow
   const documentUpload = useDocumentUploadFlow();
 
-  // Shared PDF generation logic
+  // Text-based PDF generation for much smaller file sizes
+  const generateTextPDFFromContent = useCallback(async (): Promise<jsPDF> => {
+    if (!targetRef.current) {
+      throw new Error('Target reference not available for PDF generation');
+    }
+
+    // Create jsPDF instance
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true,
+    });
+
+    // Extract text content from the DOM element
+    const element = targetRef.current;
+    const textContent = element.innerText || element.textContent || '';
+
+    // Split text into lines that fit the page width
+    const lines = pdf.splitTextToSize(textContent, 180); // 180mm for text width
+
+    // Add text to PDF with proper formatting
+    let y = 20; // Start 20mm from top
+    const lineHeight = 6; // 6mm line height
+    const pageHeight = 280; // Usable page height
+
+    pdf.setFontSize(10);
+
+    lines.forEach((line: string) => {
+      // Check if we need a new page
+      if (y > pageHeight) {
+        pdf.addPage();
+        y = 20;
+      }
+
+      pdf.text(line, 15, y); // 15mm margin from left
+      y += lineHeight;
+    });
+
+    return pdf;
+  }, [targetRef]);
+
+  // Shared PDF generation logic with mode selection
   const generatePDFFromContent = useCallback(async (): Promise<jsPDF> => {
+    if (useTextMode) {
+      return generateTextPDFFromContent();
+    }
+
     if (!targetRef.current) {
       throw new Error('Target reference not available for PDF generation');
     }
 
     // Use html2canvas to capture the element as an image
     const canvas = await html2canvas(targetRef.current, {
-      scale: 2, // Higher resolution
+      scale: 1, // Reduced from 2 to 1 for smaller file size
       useCORS: true,
       allowTaint: false,
       backgroundColor: '#ffffff',
+      logging: false, // Disable logging for performance
+      removeContainer: true,
     });
 
     // Create jsPDF instance
@@ -38,6 +87,7 @@ export const usePDFGeneration = ({ onUploadSuccess, onUploadError }: UsePDFGener
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
+      compress: true, // Enable compression
     });
 
     // Calculate dimensions to fit the content on the PDF page
@@ -46,26 +96,26 @@ export const usePDFGeneration = ({ onUploadSuccess, onUploadError }: UsePDFGener
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     let heightLeft = imgHeight;
 
-    // Convert canvas to image data
-    const imgData = canvas.toDataURL('image/png');
+    // Convert canvas to image data with compression
+    const imgData = canvas.toDataURL('image/jpeg', 0.8); // Use JPEG with 80% quality instead of PNG
 
-    // Add the image to PDF
+    // Add the image to PDF with compression
     let position = 0;
 
     // Add first page
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'MEDIUM'); // Add compression level
     heightLeft -= pageHeight;
 
     // Add additional pages if content is longer than one page
     while (heightLeft >= 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'MEDIUM');
       heightLeft -= pageHeight;
     }
 
     return pdf;
-  }, [targetRef]);
+  }, [targetRef, useTextMode, generateTextPDFFromContent]);
 
   // Generate PDF for browser preview/download
   const generatePDFOnly = useCallback(async () => {
@@ -136,6 +186,9 @@ export const usePDFGeneration = ({ onUploadSuccess, onUploadError }: UsePDFGener
     uploadResponse: null, // Deprecated - use documentUpload.steps for detailed status
     lastGeneratedBlob, // Access to the last generated PDF blob
     isProcessing: isGenerating || documentUpload.isLoading,
+    // PDF generation mode controls
+    useTextMode,
+    setUseTextMode, // Toggle between image-based (false) and text-based (true) PDF generation
     // Expose document upload flow for detailed status tracking
     documentUpload,
   };
