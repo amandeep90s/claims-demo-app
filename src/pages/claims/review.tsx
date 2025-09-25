@@ -40,15 +40,15 @@ const ReviewPage: React.FC<ReviewPageProps> = ({
     generateAndUploadPDF,
     generatePDFOnly, // Browser preview
     isProcessing: isPDFProcessing,
-    uploadResponse, // Contains fileUrl from upload API
+    documentUpload, // New document upload flow
   } = usePDFGeneration({
     onUploadSuccess: (response) => {
       // eslint-disable-next-line no-console
-      console.log('PDF uploaded successfully. File URL:', response.fileUrl);
+      console.log('Claim submitted successfully:', response.claimNumber);
     },
     onUploadError: (error) => {
       // eslint-disable-next-line no-console
-      console.error('PDF upload failed:', error);
+      console.error('Upload or submission failed:', error);
       // You could show a toast/notification here
     },
   });
@@ -87,16 +87,24 @@ const ReviewPage: React.FC<ReviewPageProps> = ({
     onSubmit(data);
 
     try {
-      // Generate and upload PDF before final submission
-      const pdfResponse = await generateAndUploadPDF();
+      // Get all form data for the claim submission
+      const allFormData = getAllFormData();
+      const claimPayload = {
+        ...allFormData,
+        submittedAt: new Date().toISOString(),
+        status: 'submitted',
+      };
 
-      // Call final submit with the PDF response
-      onFinalSubmit(pdfResponse);
+      // Generate and upload PDF with claim submission in the new 3-step flow
+      const claimResponse = await generateAndUploadPDF(claimPayload);
+
+      // Call final submit with the claim response (PDF is already handled)
+      onFinalSubmit(claimResponse);
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('PDF generation failed during final submit:', error);
+      console.error('PDF generation/upload or claim submission failed:', error);
 
-      // Still proceed with final submit even if PDF fails
+      // Still proceed with final submit even if the process fails
       // You might want to show a warning to the user here
       onFinalSubmit();
     }
@@ -190,10 +198,32 @@ const ReviewPage: React.FC<ReviewPageProps> = ({
             )}
           </button>
 
-          {uploadResponse && (
+          {/* Upload Status Display */}
+          {documentUpload.steps.getSignedUrl.isSuccess && (
             <div className='flex items-center gap-2 text-sm text-gray-600'>
+              <span className='inline-block h-2 w-2 rounded-full bg-blue-500' />
+              Step 1/3: Signed URL obtained
+            </div>
+          )}
+
+          {documentUpload.steps.uploadFile.isSuccess && (
+            <div className='flex items-center gap-2 text-sm text-gray-600'>
+              <span className='inline-block h-2 w-2 rounded-full bg-blue-500' />
+              Step 2/3: PDF uploaded successfully
+            </div>
+          )}
+
+          {documentUpload.steps.submitClaim.isSuccess && (
+            <div className='text-success flex items-center gap-2 text-sm'>
               <span className='inline-block h-2 w-2 rounded-full bg-green-500' />
-              PDF uploaded: <span className='font-mono text-xs'>{uploadResponse.fileName}</span>
+              Step 3/3: Claim submitted successfully
+            </div>
+          )}
+
+          {documentUpload.error && (
+            <div className='text-danger flex items-center gap-2 text-sm'>
+              <span className='inline-block h-2 w-2 rounded-full bg-red-500' />
+              Error: {documentUpload.error.message}
             </div>
           )}
         </div>

@@ -1,17 +1,15 @@
 import { useCallback, useState } from 'react';
 import { usePDF } from 'react-to-pdf';
 
-import { uploadFile, type UploadFileResponse } from '@/utils/mockAPI';
+import { useDocumentUploadFlow } from './useDocumentUpload';
 
 interface UsePDFGenerationProps {
-  onUploadSuccess?: (response: UploadFileResponse) => void;
+  onUploadSuccess?: (response: any) => void;
   onUploadError?: (error: any) => void;
 }
 
 export const usePDFGeneration = ({ onUploadSuccess, onUploadError }: UsePDFGenerationProps = {}) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadResponse, setUploadResponse] = useState<UploadFileResponse | null>(null);
   const [lastGeneratedBlob, setLastGeneratedBlob] = useState<Blob | null>(null);
 
   const { toPDF, targetRef } = usePDF({
@@ -22,21 +20,15 @@ export const usePDFGeneration = ({ onUploadSuccess, onUploadError }: UsePDFGener
     },
   });
 
-  // Upload PDF blob to server
-  const uploadPDFFile = useCallback(async (pdfBlob: Blob): Promise<UploadFileResponse> => {
-    // Use the mock API for now - replace with real API endpoint in production
-    return uploadFile(pdfBlob, {
-      type: 'claim-review',
-      category: 'supporting-document',
-    });
-  }, []);
+  // Initialize the document upload flow
+  const documentUpload = useDocumentUploadFlow();
 
   // Simple PDF generation without upload (for preview) - uses toPDF directly
   const generatePDFOnly = useCallback(async () => {
     setIsGenerating(true);
     try {
       // Use react-to-pdf toPDF for direct browser preview
-      await toPDF();
+      toPDF();
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('PDF preview generation failed:', error);
@@ -45,43 +37,83 @@ export const usePDFGeneration = ({ onUploadSuccess, onUploadError }: UsePDFGener
     }
   }, [toPDF]);
 
-  // Generate PDF and upload for final submission
-  const generateAndUploadPDF = useCallback(async (): Promise<UploadFileResponse> => {
-    setIsUploading(true);
+  // Create PDF blob from the actual content for upload
+  const createPDFBlobFromContent = useCallback(async (): Promise<Blob> => {
+    return new Promise((resolve) => {
+      if (!targetRef.current) {
+        // Fallback to a simple text blob if targetRef is not available
+        const fallbackContent = 'No content available';
 
-    try {
-      // For upload, we need to create a blob - using a simple approach for now
-      // In a real app, you'd want to use the same PDF generation as preview
-      const pdfContent = 'Mock PDF content for upload simulation';
-      const pdfBlob = new Blob([pdfContent], { type: 'application/pdf' });
+        resolve(new Blob([fallbackContent], { type: 'application/pdf' }));
 
-      setLastGeneratedBlob(pdfBlob);
+        return;
+      }
 
-      // Upload the PDF and get the URL
-      const response = await uploadPDFFile(pdfBlob);
+      try {
+        // Extract only the actual content from the target element
+        const element = targetRef.current;
+        const textContent = element.innerText || element.textContent || '';
 
-      setUploadResponse(response);
-      onUploadSuccess?.(response);
+        // Clean and format the content - keep original data only
+        const cleanContent = textContent.replace(/\s+/g, ' ').trim().substring(0, 5000);
 
-      return response;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('PDF generation or upload failed:', error);
-      onUploadError?.(error);
-      throw error;
-    } finally {
-      setIsUploading(false);
-    }
-  }, [uploadPDFFile, onUploadSuccess, onUploadError]);
+        // Add only the actual content lines without extra headers
+        const contentLines = cleanContent
+          .split('\n')
+          .map((line: string) => `(${line.substring(0, 80).replace(/[()\\]/g, ' ')}) Tj\n0 -15 Td`)
+          .join('\n');
+
+        const fullPdfContent = contentLines;
+
+        const blob = new Blob([fullPdfContent], { type: 'application/pdf' });
+
+        resolve(blob);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to extract content, using fallback:', error);
+        const fallbackContent = 'Content extraction failed';
+
+        resolve(new Blob([fallbackContent], { type: 'application/pdf' }));
+      }
+    });
+  }, [targetRef]);
+
+  // Generate PDF and upload using the new 3-step flow
+  const generateAndUploadPDF = useCallback(
+    async (claimData: any) => {
+      try {
+        // Generate a PDF blob with the actual content from the review page
+        const pdfBlob = await createPDFBlobFromContent();
+
+        setLastGeneratedBlob(pdfBlob);
+
+        // Use the new upload flow: get signed URL -> upload to signed URL -> submit claim
+        const filename = `claim-review-${new Date().toISOString().split('T')[0]}.pdf`;
+        const response = await documentUpload.uploadAndSubmit(pdfBlob, filename, claimData);
+
+        onUploadSuccess?.(response);
+
+        return response;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('PDF generation or upload failed:', error);
+        onUploadError?.(error);
+        throw error;
+      }
+    },
+    [createPDFBlobFromContent, documentUpload, onUploadSuccess, onUploadError]
+  );
 
   return {
     targetRef,
     generateAndUploadPDF,
     generatePDFOnly, // Simple PDF generation for browser preview
     isGenerating,
-    isUploading,
-    uploadResponse, // Contains fileUrl for final submission
+    isUploading: documentUpload.isLoading,
+    uploadResponse: null, // Deprecated - use documentUpload.steps for detailed status
     lastGeneratedBlob, // Access to the last generated PDF blob
-    isProcessing: isGenerating || isUploading,
+    isProcessing: isGenerating || documentUpload.isLoading,
+    // Expose document upload flow for detailed status tracking
+    documentUpload,
   };
 };
