@@ -1,4 +1,5 @@
 export * from './AlertField';
+export * from './AutocompleteField';
 export * from './CheckboxField';
 export * from './DatePicker';
 export * from './FormField';
