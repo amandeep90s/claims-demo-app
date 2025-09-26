@@ -53,6 +53,7 @@ function AutocompleteFieldComponent<
       name={name}
       render={({ field: { onChange, value, onBlur }, fieldState: { error: fieldError } }) => (
         <Autocomplete
+          allowsCustomValue={false}
           className={className}
           classNames={{
             base: 'w-full',
@@ -60,23 +61,21 @@ function AutocompleteFieldComponent<
             popoverContent: 'z-[1000]',
             selectorButton: cn(formFieldStyles.inputWrapper),
           }}
+          defaultItems={options}
           description={description}
           errorMessage={error?.message || fieldError?.message}
-          inputValue={value || ''}
           isDisabled={isDisabled}
           isInvalid={!!(error || fieldError)}
           isRequired={isRequired}
-          items={options}
           label={label}
           placeholder={placeholder}
           radius='sm'
-          selectedKey={value || null}
+          selectedKey={value ?? ''}
           size='lg'
           variant='bordered'
           onBlur={onBlur}
-          onInputChange={onChange}
           onSelectionChange={(key) => {
-            onChange(key);
+            onChange(key ?? '');
             onSelectionChange?.(key);
           }}
         >
