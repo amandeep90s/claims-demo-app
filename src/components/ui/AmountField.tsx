@@ -35,7 +35,7 @@ function formatAmount(value: string | number, locale = 'en-US', maxDecimals = 2)
   if (isNaN(numValue)) return '';
 
   return new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 0,
+    minimumFractionDigits: maxDecimals, // Always show decimals
     maximumFractionDigits: maxDecimals,
   }).format(numValue);
 }
@@ -119,17 +119,20 @@ function AmountFieldComponent<
           value={value || ''}
           variant='bordered'
           onBlur={(e) => {
-            const rawValue = parseAmount(e.target.value);
-            const formattedValue = formatAmount(rawValue, locale, maxDecimals);
+            const inputValue = e.target.value;
+            const rawValue = parseAmount(inputValue);
 
-            // Show formatted value in the input
-            e.target.value = formattedValue;
+            if (rawValue) {
+              const formattedValue = formatAmount(rawValue, locale, maxDecimals);
+              // Update form state with formatted value for display
 
-            // Update the form with the raw numeric value (or empty string if empty)
-            const finalValue = rawValue || '';
+              onChange(formattedValue);
+            } else {
+              // Handle empty case
+              onChange('');
+            }
 
-            onChange(finalValue);
-            onValueChange?.(finalValue);
+            onValueChange?.(rawValue || '');
             onBlur();
           }}
           onChange={(e) => {
@@ -137,18 +140,20 @@ function AmountFieldComponent<
 
             // Allow typing while maintaining some validation
             if (isValidAmountInput(inputValue)) {
-              // Store raw value during typing (don't format until blur)
+              // Store the input value as-is during typing
+              onChange(inputValue);
               const rawValue = parseAmount(inputValue);
 
-              onChange(rawValue || '');
               onValueChange?.(rawValue || '');
             }
           }}
-          onFocus={(e) => {
+          onFocus={() => {
             // On focus, show the raw unformatted value for easier editing
-            const rawValue = parseAmount(value || '');
+            if (value) {
+              const rawValue = parseAmount(value);
 
-            e.target.value = rawValue;
+              onChange(rawValue);
+            }
           }}
         />
       )}
